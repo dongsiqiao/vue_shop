@@ -101,6 +101,8 @@ export default {
 }
 .el-aside {
   background-color: #333744;
+  //禁止文字选中
+  user-select: none;
   .el-menu {
     border-right: none;
   }
@@ -119,7 +121,5 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
-  //禁止文字选中
-  user-select: none;
 }
 </style>
