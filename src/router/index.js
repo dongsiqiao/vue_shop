@@ -24,4 +24,12 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') return next()
+  const tokenStr = window.sessionStorage.getItem('token')
+  if (!tokenStr) return next('/login')
+  // 否则 token 存在那就放行，【正常这里应该有个校验 token 有效性的一个接口，或者通过后续的响应拦截器去做】
+  next()
+})
+
 export default router
