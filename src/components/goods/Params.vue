@@ -25,14 +25,18 @@
           <el-button type="primary" size="mini" :disabled="isBtnDisabled" @click="addDialogVisible = true">添加参数</el-button>
           <el-table :data="manyTableData" border stripe>
             <!-- 展开行的操作 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable>{{ item }}</el-tag>
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column label="参数名称" prop="attr_name"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
-                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete" @click="removeParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -50,7 +54,7 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
-                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete" @click="removeParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -219,6 +223,23 @@ export default {
         this.getParamsData()
         this.editDialogVisible = false
       })
+    },
+    // 根据 ID 删除对应的参数项
+    async removeParams(attrId) {
+      const confirmResult = await this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch((err) => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const { data: res } = await this.$http.delete(`categories/${this.cateId}/attributes/${attrId}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除参数失败')
+      }
+      this.$message.success('删除参数成功')
+      this.getParamsData()
     }
   },
 
@@ -253,5 +274,8 @@ export default {
 <style lang="less" scoped>
 .cat_opt {
   margin: 15px 0;
+}
+el-tag {
+  margin: 0 10px;
 }
 </style>
