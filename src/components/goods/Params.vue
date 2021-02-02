@@ -161,6 +161,11 @@ export default {
           sel: this.activeName
         }
       })
+      // 对参数下的可选项数据进行加工
+      res.data.forEach((item) => {
+        // ''.split(' ') => ['']
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+      })
       if (res.meta.status !== 200) {
         return this.$message.error('获取参数列表失败')
       }
