@@ -14,7 +14,7 @@
         </el-col>
       </el-row>
       <!-- 表格区域 -->
-      <tree-table :data="catelist" :columns="columns" :selection-type="false" show-index index-text="#" border :show-row-hover="false" class="treeTable">
+      <tree-table :data="catelist" :columns="columns" :selection-type="false" show-index index-text="#" border :show-row-hover="false" class="treeTable" :expand-type="false">
         <!-- 是否有效 -->
         <template slot="isok" slot-scope="scope">
           <i class="el-icon-success" v-if="scope.row.cat_deleted === false" style="color: lightgreen;"></i>
