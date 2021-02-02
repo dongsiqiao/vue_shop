@@ -20,13 +20,19 @@
       </el-row>
       <!-- tab 标签 -->
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
-        <el-tab-pane label="动态参数" name="first">动态参数</el-tab-pane>
-        <el-tab-pane label="静态属性" name="second">静态属性</el-tab-pane>
+        <!-- 添加动态参数面板 -->
+        <el-tab-pane label="动态参数" name="many">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
+        </el-tab-pane>
+        <!-- 添加静态属性面板 -->
+        <el-tab-pane label="静态属性" name="only">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
 </template>
-
+expandTrigger: 'hover', checkStrictly: true
 <script>
 export default {
   data() {
@@ -43,7 +49,7 @@ export default {
       // 级联选择框双向绑定到的数组
       selectedCateKeys: [],
       // 被激活的页签的名称
-      activeName: 'first'
+      activeName: 'many'
     }
   },
   created() {
@@ -59,18 +65,44 @@ export default {
       this.catelist = res.data
     },
     // 级联选择框选中项变化会触发
-    handleChange() {
+    async handleChange() {
       if (this.selectedCateKeys.length !== 3) {
         // 证明选中的不是 3 级分类
         this.selectedCateKeys = []
         return false
       }
       // 选中的是 3 级分类
-      console.log(this.selectedCateKeys)
+      // 根据所选分类的 ID，和当前所处的面板，获取对应的参数
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: {
+          sel: this.activeName
+        }
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数列表失败')
+      }
+      console.log(res.data)
     },
     // Tab 页签点击时触发
     handleTabClick() {
       console.log(this.activeName)
+    }
+  },
+  computed: {
+    // 如果按钮需要被禁用，则返回 true，否则返回 false
+    isBtnDisabled() {
+      if (this.selectedCateKeys.length !== 3) {
+        return true
+      } else {
+        return false
+      }
+    },
+    // 当前选中的 3 级分类的 ID
+    cateId() {
+      if (this.selectedCateKeys.length === 3) {
+        return this.selectedCateKeys[2]
+      }
+      return null
     }
   }
 }
