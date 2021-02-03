@@ -28,7 +28,7 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <!-- 循环渲染 Tag 标签 -->
-                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable>{{ item }}</el-tag>
+                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable @close="handleClose(i, scope.row)">{{ item }}</el-tag>
                 <!-- 输入的文本框 -->
                 <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)"></el-input>
                 <!-- 添加的按钮 -->
@@ -52,7 +52,16 @@
           <!-- 静态属性表格 -->
           <el-table :data="onlyTableData" border stripe>
             <!-- 展开行的操作 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <!-- 循环渲染 Tag 标签 -->
+                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable @close="handleClose(i, scope.row)">{{ item }}</el-tag>
+                <!-- 输入的文本框 -->
+                <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)"></el-input>
+                <!-- 添加的按钮 -->
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column label="属性名称" prop="attr_name"></el-table-column>
@@ -157,6 +166,8 @@ export default {
       if (this.selectedCateKeys.length !== 3) {
         // 证明选中的不是 3 级分类
         this.selectedCateKeys = []
+        this.manyTableData = []
+        this.onlyTableData = []
         return false
       }
       // 选中的是 3 级分类
@@ -267,6 +278,19 @@ export default {
       row.inputValue = ''
       row.inputVisible = false
       // 发情请求，保存这次操作
+      //   const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${row.attr_id}`, {
+      //     attr_name: row.attr_name,
+      //     attr_sel: row.attr_sel,
+      //     attr_vals: row.attr_vals.join(' ')
+      //   })
+      //   if (res.meta.status !== 200) {
+      //     return this.$message.error('添加参数项失败')
+      //   }
+      //   this.$message.success('添加参数成功')
+      this.saveAttrVals(row)
+    },
+    // 将对 attr_vals 的操作，保存到数据库
+    async saveAttrVals(row) {
       const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${row.attr_id}`, {
         attr_name: row.attr_name,
         attr_sel: row.attr_sel,
@@ -285,6 +309,11 @@ export default {
       this.$nextTick(() => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
+    },
+    // 删除对应的参数和选项
+    handleClose(i, row) {
+      row.attr_vals.splice(i, 1)
+      this.saveAttrVals(row)
     }
   },
 
