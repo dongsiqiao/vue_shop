@@ -81,7 +81,7 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         // 商品所属的分类数组
-        goods_cat: [{ required: true, message: '请选择商品分类', trigger: 'blur' }],
+        goods_cat: [],
         // 图片的数组
         pics: []
       },
@@ -89,7 +89,8 @@ export default {
         goods_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         goods_price: [{ required: true, message: '请输入商品价格', trigger: 'blur' }],
         goods_weight: [{ required: true, message: '请输入商品重量', trigger: 'blur' }],
-        goods_number: [{ required: true, message: '请输入商品数量', trigger: 'blur' }]
+        goods_number: [{ required: true, message: '请输入商品数量', trigger: 'blur' }],
+        goods_cat: [{ required: true, message: '请选择商品分类', trigger: 'blur' }]
       },
       // 商品分类列表
       catelist: [],
